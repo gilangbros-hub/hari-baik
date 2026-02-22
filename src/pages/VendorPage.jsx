@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { Star, MapPin, MessageCircle, Search } from 'lucide-react';
 
 export default function VendorPage() {
@@ -14,9 +14,14 @@ export default function VendorPage() {
 
     async function fetchVendors() {
         setLoading(true);
-        const { data } = await supabase.from('vendors').select('*').order('rating', { ascending: false });
-        setVendors(data || []);
-        setLoading(false);
+        try {
+            const data = await api.getVendors();
+            setVendors(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const filteredVendors = vendors.filter(v => {

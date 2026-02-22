@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js';
@@ -21,12 +21,17 @@ export default function BudgetPage() {
 
     async function fetchData() {
         setLoading(true);
-        const { data: catData } = await supabase.from('budget_categories').select('*').order('created_at');
-        setCategories(catData || []);
+        try {
+            const catData = await api.getBudgetCategories();
+            setCategories(catData || []);
 
-        const { data: payData } = await supabase.from('payments').select('*').order('paid_at', { ascending: false });
-        setPayments(payData || []);
-        setLoading(false);
+            const payData = await api.getPayments();
+            setPayments(payData || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const totalAllocated = categories.reduce((s, c) => s + Number(c.allocated), 0);
@@ -41,18 +46,26 @@ export default function BudgetPage() {
 
     async function addCategory(e) {
         e.preventDefault();
-        const { data, error } = await supabase.from('budget_categories').insert({
-            user_id: user.id, name: newCat.name, allocated: parseInt(newCat.allocated) || 0, color: colors[categories.length % colors.length]
-        }).select().single();
-        if (!error && data) { setCategories([...categories, data]); setNewCat({ name: '', allocated: '' }); setShowCatForm(false); }
+        try {
+            const data = await api.createBudgetCategory({
+                name: newCat.name, allocated: parseInt(newCat.allocated) || 0, color: colors[categories.length % colors.length]
+            });
+            if (data) { setCategories([...categories, data]); setNewCat({ name: '', allocated: '' }); setShowCatForm(false); }
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     async function addPayment(e) {
         e.preventDefault();
-        const { data, error } = await supabase.from('payments').insert({
-            user_id: user.id, category_id: newPayment.category_id, amount: parseInt(newPayment.amount) || 0, type: newPayment.type, note: newPayment.note
-        }).select().single();
-        if (!error && data) { setPayments([data, ...payments]); setNewPayment({ category_id: '', amount: '', type: 'dp', note: '' }); setShowPaymentForm(false); }
+        try {
+            const data = await api.createPayment({
+                category_id: newPayment.category_id, amount: parseInt(newPayment.amount) || 0, type: newPayment.type, note: newPayment.note
+            });
+            if (data) { setPayments([data, ...payments]); setNewPayment({ category_id: '', amount: '', type: 'dp', note: '' }); setShowPaymentForm(false); }
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     const donutData = {

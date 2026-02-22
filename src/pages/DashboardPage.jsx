@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js';
-import { Heart, Calendar, Wallet, CheckSquare } from 'lucide-react';
+import { Calendar, Wallet, CheckSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(ArcElement, Tooltip);
@@ -31,17 +31,16 @@ export default function DashboardPage() {
         setLoading(true);
         try {
             // Fetch tasks
-            const { data: taskData } = await supabase.from('tasks').select('*').order('due_date', { ascending: true });
+            const taskData = await api.getTasks();
             setTasks(taskData || []);
 
-            // Fetch budget categories and payments
-            const { data: catData } = await supabase.from('budget_categories').select('*');
+            const catData = await api.getBudgetCategories();
             setBudgetCats(catData || []);
 
             const allocated = (catData || []).reduce((s, c) => s + Number(c.allocated), 0);
             setTotalBudget(allocated);
 
-            const { data: payData } = await supabase.from('payments').select('amount');
+            const payData = await api.getPayments();
             const spent = (payData || []).reduce((s, p) => s + Number(p.amount), 0);
             setTotalSpent(spent);
         } catch (err) {

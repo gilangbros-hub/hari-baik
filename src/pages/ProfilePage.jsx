@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Bell, Heart, LogOut, ChevronRight, Calendar } from 'lucide-react';
+import { User, Settings, Bell, LogOut, ChevronRight, Calendar } from 'lucide-react';
 
 export default function ProfilePage() {
     const navigate = useNavigate();

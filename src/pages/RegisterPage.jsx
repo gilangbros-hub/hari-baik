@@ -14,7 +14,7 @@ export default function RegisterPage() {
         setError('');
         setLoading(true);
         try {
-            await signUp(formData.email, formData.password, formData.name, formData.role);
+            await signUp(formData.email.trim(), formData.password, formData.name.trim(), formData.role);
             navigate('/mode');
         } catch (err) {
             setError(err.message || 'Pendaftaran gagal. Coba lagi.');
@@ -41,7 +41,7 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit}>
                 <div className="mb-md">
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Nama Lengkap</label>
-                    <input type="text" className="input-base" placeholder="John Doe" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                    <input type="text" className="input-base" placeholder="John Doe" required maxLength={100} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                 </div>
 
                 <div className="mb-md">
@@ -55,7 +55,7 @@ export default function RegisterPage() {
 
                 <div className="mb-md">
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Email / Username</label>
-                    <input type="text" className="input-base" placeholder="nama / email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                    <input type="text" className="input-base" placeholder="nama / email" required maxLength={100} value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 </div>
 
                 <div className="mb-lg">
@@ -67,15 +67,6 @@ export default function RegisterPage() {
                     {loading ? 'Mendaftar...' : 'Lanjutkan'}
                 </button>
 
-                <div style={{ position: 'relative', textAlign: 'center', margin: '2rem 0' }}>
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
-                    <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'var(--surface)', padding: '0 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>ATAU</span>
-                </div>
-
-                <button type="button" className="btn-outline" style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20" />
-                    Daftar dengan Google
-                </button>
             </form>
         </div>
     );

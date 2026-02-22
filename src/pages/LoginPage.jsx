@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { signIn, signInWithGoogle } = useAuth();
+    const { signIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -15,20 +15,12 @@ export default function LoginPage() {
         setError('');
         setLoading(true);
         try {
-            await signIn(email, password);
+            await signIn(email.trim(), password);
             navigate('/');
         } catch (err) {
             setError(err.message || 'Login gagal. Periksa email dan password.');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleGoogle = async () => {
-        try {
-            await signInWithGoogle();
-        } catch (err) {
-            setError(err.message || 'Login Google gagal.');
         }
     };
 
@@ -48,7 +40,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit}>
                 <div className="mb-md">
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Email / Username</label>
-                    <input type="text" className="input-base" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <input type="text" className="input-base" required maxLength={100} value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="mb-lg">
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Password</label>
@@ -56,16 +48,6 @@ export default function LoginPage() {
                 </div>
                 <button type="submit" className="btn-primary mb-md" disabled={loading}>
                     {loading ? 'Masuk...' : 'Masuk'}
-                </button>
-
-                <div style={{ position: 'relative', textAlign: 'center', margin: '2rem 0' }}>
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
-                    <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'var(--surface)', padding: '0 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>ATAU</span>
-                </div>
-
-                <button type="button" onClick={handleGoogle} className="btn-outline" style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20" />
-                    Masuk dengan Google
                 </button>
             </form>
         </div>

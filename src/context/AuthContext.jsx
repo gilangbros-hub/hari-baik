@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { api, getToken } from '../lib/api';
 
 const AuthContext = createContext({});
 
@@ -13,97 +13,69 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null);
-            if (session?.user) fetchProfile(session.user.id);
-            else setLoading(false);
-        });
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            if (session?.user) fetchProfile(session.user.id);
-            else {
-                setProfile(null);
-                setLoading(false);
-            }
-        });
-
-        return () => subscription.unsubscribe();
+        // Check for existing session on mount
+        checkSession();
     }, []);
 
-    async function fetchProfile(userId) {
+    async function checkSession() {
         try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
-
-            if (error && error.code === 'PGRST116') {
-                // Profile doesn't exist yet — will be created during registration
-                setProfile(null);
-            } else if (data) {
-                setProfile(data);
+            const token = getToken();
+            if (!token) {
+                setLoading(false);
+                return;
             }
-        } catch (err) {
-            console.error('Error fetching profile:', err);
+
+            const sessionData = await api.getSession();
+            if (sessionData) {
+                setUser(sessionData.user);
+                setProfile(sessionData.profile);
+            }
+        } catch {
+            setUser(null);
+            setProfile(null);
         } finally {
             setLoading(false);
         }
     }
 
     async function signUp(email, password, name, role) {
-        const safeEmail = email.includes('@') ? email : `${email.replace(/\s+/g, '').toLowerCase()}@app.local`;
-        const { data, error } = await supabase.auth.signUp({ email: safeEmail, password });
-        if (error) throw error;
-
+        const data = await api.signup(email, password, name, role);
         if (data.user) {
-            const { error: profileError } = await supabase.from('profiles').insert({
-                id: data.user.id,
-                name,
-                role,
-                mode: 'all-in-one',
-            });
-            if (profileError) throw profileError;
-            await fetchProfile(data.user.id);
+            setUser(data.user);
+            // Fetch the full profile
+            try {
+                const profileData = await api.getProfile();
+                setProfile(profileData);
+            } catch {
+                // Profile will be loaded on next session check
+            }
         }
         return data;
     }
 
     async function signIn(email, password) {
-        const safeEmail = email.includes('@') ? email : `${email.replace(/\s+/g, '').toLowerCase()}@app.local`;
-        const { data, error } = await supabase.auth.signInWithPassword({ email: safeEmail, password });
-        if (error) throw error;
-        return data;
-    }
-
-    async function signInWithGoogle() {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: { redirectTo: window.location.origin }
-        });
-        if (error) throw error;
+        const data = await api.login(email, password);
+        if (data.user) {
+            setUser(data.user);
+            // Fetch the full profile
+            try {
+                const profileData = await api.getProfile();
+                setProfile(profileData);
+            } catch {
+                // Profile will be loaded on next session check
+            }
+        }
         return data;
     }
 
     async function signOut() {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        await api.logout();
         setUser(null);
         setProfile(null);
     }
 
     async function updateProfile(updates) {
-        if (!user) return;
-        const { data, error } = await supabase
-            .from('profiles')
-            .update(updates)
-            .eq('id', user.id)
-            .select()
-            .single();
-        if (error) throw error;
+        const data = await api.updateProfile(updates);
         setProfile(data);
         return data;
     }
@@ -114,10 +86,8 @@ export function AuthProvider({ children }) {
         loading,
         signUp,
         signIn,
-        signInWithGoogle,
         signOut,
         updateProfile,
-        fetchProfile,
     };
 
     return (

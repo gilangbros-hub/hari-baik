@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { CheckCircle2, Circle, Calendar, User, Plus, X } from 'lucide-react';
 
@@ -19,34 +19,39 @@ export default function ChecklistPage() {
 
     async function fetchTasks() {
         setLoading(true);
-        const { data } = await supabase.from('tasks').select('*').order('due_date', { ascending: true });
-        setTasks(data || []);
-        setLoading(false);
+        try {
+            const data = await api.getTasks();
+            setTasks(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     async function toggleTask(id, currentStatus) {
         const newStatus = currentStatus === 'done' ? 'todo' : 'done';
-        await supabase.from('tasks').update({ status: newStatus }).eq('id', id);
+        await api.updateTask(id, { status: newStatus });
         setTasks(tasks.map(t => t.id === id ? { ...t, status: newStatus } : t));
     }
 
     async function addTask(e) {
         e.preventDefault();
         if (!newTask.title.trim()) return;
-        const { data, error } = await supabase.from('tasks').insert({
-            ...newTask,
-            user_id: user.id,
-            status: 'todo',
-        }).select().single();
-        if (!error && data) {
-            setTasks([...tasks, data]);
-            setNewTask({ title: '', category: 'Pernikahan', pic: 'CPP', due_date: '' });
-            setShowForm(false);
+        try {
+            const data = await api.createTask(newTask);
+            if (data) {
+                setTasks([...tasks, data]);
+                setNewTask({ title: '', category: 'Pernikahan', pic: 'CPP', due_date: '' });
+                setShowForm(false);
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 
     async function deleteTask(id) {
-        await supabase.from('tasks').delete().eq('id', id);
+        await api.deleteTask(id);
         setTasks(tasks.filter(t => t.id !== id));
     }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+
 
 export default function LandingPage() {
     const navigate = useNavigate();
