@@ -8,7 +8,7 @@ export default function LandingPage() {
     return (
         <div style={{ padding: '2rem 1rem', minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--surface)' }}>
             <div className="text-center mb-xl" style={{ marginTop: '2rem' }}>
-                <Heart size={48} color="var(--primary)" style={{ margin: '0 auto', marginBottom: '1rem' }} />
+                <span style={{ fontSize: '48px', margin: '0 auto', marginBottom: '1rem', display: 'block' }}>❤️</span>
                 <h1 style={{ fontSize: '2.2rem', lineHeight: 1.2 }}>Rencanakan<br />Hari Baikmu</h1>
                 <p style={{ color: 'var(--text-muted)' }}>Teman setia menuju pernikahan impian Anda.</p>
             </div>
@@ -20,7 +20,7 @@ export default function LandingPage() {
                     style={{ display: 'flex', alignItems: 'center', gap: '1rem', textAlign: 'left', backgroundColor: 'var(--bg-color)' }}
                 >
                     <div style={{ backgroundColor: 'var(--primary-light)', padding: '1rem', borderRadius: '50%', color: 'white' }}>
-                        <Heart size={24} />
+                        <span style={{ fontSize: '24px' }}>❤️</span>
                     </div>
                     <div>
                         <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Baru Memulai</h3>

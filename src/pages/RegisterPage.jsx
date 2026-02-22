@@ -54,8 +54,8 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="mb-md">
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Email</label>
-                    <input type="email" className="input-base" placeholder="nama@email.com" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Email / Username</label>
+                    <input type="text" className="input-base" placeholder="nama / email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 </div>
 
                 <div className="mb-lg">

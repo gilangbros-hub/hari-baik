@@ -32,7 +32,7 @@ export default function ProfilePage() {
             <header style={{ paddingTop: '1rem', textAlign: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ margin: 0, fontSize: '1.5rem', marginBottom: '1.5rem', textAlign: 'left' }}>Profil Saya</h1>
                 <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', marginBottom: '1rem', boxShadow: 'var(--shadow-md)' }}>
-                    <Heart size={48} />
+                    <span style={{ fontSize: '48px' }}>❤️</span>
                 </div>
                 <h2 style={{ margin: 0, fontSize: '1.5rem' }}>{profile?.name || 'Pasangan'}</h2>
                 <p style={{ color: 'var(--text-muted)', margin: '0.25rem 0 0 0' }}>Peran: {profile?.role || 'CPP'} &bull; Mode: {profile?.mode === 'all-in-one' ? 'Lengkap' : profile?.mode || '-'}</p>

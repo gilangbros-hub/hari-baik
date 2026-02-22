@@ -47,8 +47,8 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit}>
                 <div className="mb-md">
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Email</label>
-                    <input type="email" className="input-base" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Email / Username</label>
+                    <input type="text" className="input-base" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="mb-lg">
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Password</label>

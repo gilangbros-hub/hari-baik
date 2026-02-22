@@ -75,13 +75,13 @@ export default function DashboardPage() {
                     <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Hi, {profile?.name || 'Pasangan'} 👋</h2>
                 </div>
                 <div style={{ backgroundColor: 'var(--surface)', padding: '0.5rem', borderRadius: '50%', boxShadow: 'var(--shadow-sm)' }}>
-                    <Heart size={20} color="var(--primary)" />
+                    <span style={{ fontSize: '20px' }}>❤️</span>
                 </div>
             </header>
 
             {/* Countdown */}
             <div className="card text-center" style={{ backgroundColor: 'var(--primary)', color: 'white', position: 'relative', overflow: 'hidden' }}>
-                <Heart size={120} color="rgba(255,255,255,0.1)" style={{ position: 'absolute', right: '-20px', top: '-20px' }} />
+                <span style={{ position: 'absolute', right: '-20px', top: '-20px', fontSize: '120px', opacity: 0.1 }}>❤️</span>
                 <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 500, marginBottom: '0.5rem' }}>Countdown Hari H</h3>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '1rem 0' }}>
                     <div>

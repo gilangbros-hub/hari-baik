@@ -55,7 +55,8 @@ export function AuthProvider({ children }) {
     }
 
     async function signUp(email, password, name, role) {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const safeEmail = email.includes('@') ? email : `${email.replace(/\s+/g, '').toLowerCase()}@app.local`;
+        const { data, error } = await supabase.auth.signUp({ email: safeEmail, password });
         if (error) throw error;
 
         if (data.user) {
@@ -72,7 +73,8 @@ export function AuthProvider({ children }) {
     }
 
     async function signIn(email, password) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const safeEmail = email.includes('@') ? email : `${email.replace(/\s+/g, '').toLowerCase()}@app.local`;
+        const { data, error } = await supabase.auth.signInWithPassword({ email: safeEmail, password });
         if (error) throw error;
         return data;
     }
