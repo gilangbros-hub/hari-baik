@@ -1,17 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const [_, setUser] = useLocalStorage('rhb_user', null);
+    const { signIn, signInWithGoogle } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setUser({ name: 'Guest User', role: 'CPW', mode: 'all-in-one' });
-        navigate('/');
+        setError('');
+        setLoading(true);
+        try {
+            await signIn(email, password);
+            navigate('/');
+        } catch (err) {
+            setError(err.message || 'Login gagal. Periksa email dan password.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogle = async () => {
+        try {
+            await signInWithGoogle();
+        } catch (err) {
+            setError(err.message || 'Login Google gagal.');
+        }
     };
 
     return (
@@ -20,6 +38,12 @@ export default function LoginPage() {
 
             <h1 className="mb-sm">Selamat Datang</h1>
             <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Masuk untuk melanjutkan perencanaan Anda.</p>
+
+            {error && (
+                <div style={{ backgroundColor: '#fde8e8', color: 'var(--danger)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                    {error}
+                </div>
+            )}
 
             <form onSubmit={handleSubmit}>
                 <div className="mb-md">
@@ -30,14 +54,16 @@ export default function LoginPage() {
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500 }}>Password</label>
                     <input type="password" className="input-base" required value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <button type="submit" className="btn-primary mb-md">Masuk</button>
+                <button type="submit" className="btn-primary mb-md" disabled={loading}>
+                    {loading ? 'Masuk...' : 'Masuk'}
+                </button>
 
                 <div style={{ position: 'relative', textAlign: 'center', margin: '2rem 0' }}>
                     <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
                     <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'var(--surface)', padding: '0 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>ATAU</span>
                 </div>
 
-                <button type="button" className="btn-outline" style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
+                <button type="button" onClick={handleGoogle} className="btn-outline" style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-main)', borderColor: 'var(--border)' }}>
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20" />
                     Masuk dengan Google
                 </button>
